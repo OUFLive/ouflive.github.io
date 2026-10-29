@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Connexion TikTok</title>
+  <link rel="icon" href="logo.png">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .code { font: 15px/1.5 ui-monospace, Menlo, monospace; background: #fff; border: 1px solid #DDD9CF;
+            border-radius: 8px; padding: 12px; word-break: break-all; margin: 8px 0 12px; }
+    button { font: inherit; background: #FF2E3D; color: #fff; border: 0; border-radius: 8px; padding: 10px 18px; cursor: pointer; }
+    .ok { color: #1D7A3A; } .erreur { color: #C8101F; }
+  </style>
+</head>
+<body>
+  <header class="barre"></header>
+  <main>
+    <p><a href="index.html">← OUF Live</a></p>
+    <h1>Connexion TikTok</h1>
+    <div id="resultat"><p>Cette page reçoit le code d'autorisation après la connexion de ton compte TikTok à OUF Live Studio.</p></div>
+  </main>
+  <footer>
+    <a href="confidentialite.html">Règles de confidentialité</a> · <a href="conditions.html">Conditions d'utilisation</a> · © 2026 OUF Live
+  </footer>
+  <script>
+    // Affiche le code renvoyé par TikTok. Rien n'est envoyé nulle part : tout reste dans ce navigateur.
+    const p = new URLSearchParams(location.search);
+    const zone = document.getElementById('resultat');
+    const texte = (balise, contenu, classe) => {
+      const el = document.createElement(balise);
+      el.textContent = contenu;
+      if (classe) el.className = classe;
+      return el;
+    };
+    if (p.get('error')) {
+      zone.replaceChildren(texte('p', 'La connexion a échoué : ' + (p.get('error_description') || p.get('error')), 'erreur'));
+    } else if (p.get('code')) {
+      const code = p.get('code');
+      const bouton = texte('button', 'Copier le code');
+      bouton.onclick = async () => {
+        try { await navigator.clipboard.writeText(code); bouton.textContent = 'Code copié ✓'; }
+        catch (e) { bouton.textContent = 'Sélectionne le code et copie-le'; }
+      };
+      zone.replaceChildren(
+        texte('p', 'Compte TikTok autorisé ✓', 'ok'),
+        texte('p', 'Copie ce code et colle-le dans le script de connexion, dans les 5 minutes (il expire vite) :'),
+        texte('div', code, 'code'),
+        bouton
+      );
+    }
+  </script>
+</body>
+</html>
